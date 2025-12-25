@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幻影坦克图片生成器 - 修复版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #1a2a6c;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .panel-title {
+            color: #1a2a6c;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e74c3c;
+        }
+        
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            background-color: #f0f8ff;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #e74c3c;
+            background-color: #fff0f0;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .upload-hint {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .preview-box {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .preview-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1a2a6c;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-generate {
+            background: linear-gradient(to right, #3498db, #1a2a6c);
+            color: white;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-download {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .result-container {
+            margin-top: 30px;
+        }
+        
+        .result-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .result-canvas-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .result-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .bg-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .bg-btn {
+            padding: 10px 20px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            background-color: white;
+            color: #3498db;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bg-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .bg-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .bg-white {
+            background-color: white;
+        }
+        
+        .bg-black {
+            background-color: black;
+        }
+        
+        .info-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .info-title {
+            color: #1a2a6c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .info-content {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .advanced-controls {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .slider-label {
+            min-width: 120px;
+            font-weight: bold;
+        }
+        
+        .slider-input {
+            flex: 1;
+        }
+        
+        .reset-btn {
+            padding: 8px 15px;
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .reset-btn:hover {
+            background-color: #7f8c8d;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>幻影坦克图片生成器 - 修复版</h1>
+            <p class="subtitle">修复了图片下载功能，现在可以正常下载生成的幻影坦克图片</p>
+        </header>
+        
+        <div class="app-container">
+            <!-- 左侧：图片上传和设置 -->
+            <div class="panel">
+                <h2 class="panel-title">图片上传与设置</h2>
+                
+                <!-- 表图上传区域 -->
+                <div class="control-group">
+                    <label>表图（白色背景显示）：</label>
+                    <div class="upload-area" id="uploadArea1">
+                        <div class="upload-icon">🖼️</div>
+                        <div class="upload-text">点击或拖放上传表图</div>
+                        <div class="upload-hint">支持PNG、JPG、JPEG格式</div>
+                        <input type="file" id="image1" accept="image/*" class="hidden">
+                    </div>
+                    <div class="image-preview">
+                        <div class="preview-label">表图预览：</div>
+                        <div class="preview-box">
+                            <img id="preview1" src="" alt="表图预览" class="hidden">
+                            <div id="placeholder1">暂无图片</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 里图上传区域 -->
+                <div class="control-group">
+                    <label>里图（黑色背景显示）：</label>
+                    <div class="upload-area" id="uploadArea2">
+                        <div class="upload-icon">🖼️</div>
+                        <div class="upload-text">点击或拖放上传里图</div>
+                        <div class="upload-hint">支持PNG、JPG、JPEG格式</div>
+                        <input type="file" id="image2" accept="image/*" class="hidden">
+                    </div>
+                    <div class="image-preview">
+                        <div class="preview-label">里图预览：</div>
+                        <div class="preview-box">
+                            <img id="preview2" src="" alt="里图预览" class="hidden">
+                            <div id="placeholder2">暂无图片</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 基本参数设置 -->
+                <div class="control-group">
+                    <label>输出尺寸：</label>
+                    <select id="outputSize">
+                        <option value="original">保持原图尺寸</option>
+                        <option value="512">512×512 像素</option>
+                        <option value="1024">1024×1024 像素</option>
+                        <option value="800x600">800×600 像素</option>
+                        <option value="1200x900">1200×900 像素</option>
+                    </select>
+                </div>
+                
+                <!-- 高级控制参数 -->
+                <div class="advanced-controls">
+                    <h3 style="margin-bottom: 15px; color: #1a2a6c;">高级参数调节</h3>
+                    
+                    <!-- 表图亮度控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">表图亮度：<span id="brightness1Value" class="slider-value">0%</span></div>
+                        <input type="range" id="brightness1" min="-100" max="100" value="0" class="slider-input">
+                    </div>
+                    
+                    <!-- 里图亮度控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">里图亮度：<span id="brightness2Value" class="slider-value">0%</span></div>
+                        <input type="range" id="brightness2" min="-100" max="100" value="0" class="slider-input">
+                    </div>
+                    
+                    <!-- 表图对比度控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">表图对比度：<span id="contrast1Value" class="slider-value">0%</span></div>
+                        <input type="range" id="contrast1" min="-50" max="100" value="0" class="slider-input">
+                    </div>
+                    
+                    <!-- 里图对比度控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">里图对比度：<span id="contrast2Value" class="slider-value">0%</span></div>
+                        <input type="range" id="contrast2" min="-50" max="100" value="0" class="slider-input">
+                    </div>
+                    
+                    <!-- 色彩比例控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">色彩比例：<span id="colorRatioValue" class="slider-value">50%</span></div>
+                        <input type="range" id="colorRatio" min="0" max="100" value="50" class="slider-input">
+                    </div>
+                    
+                    <!-- 亮度比例控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">亮度比例：<span id="brightnessRatioValue" class="slider-value">50%</span></div>
+                        <input type="range" id="brightnessRatio" min="0" max="100" value="50" class="slider-input">
+                    </div>
+                    
+                    <!-- 透明度强度控制 -->
+                    <div class="slider-container">
+                        <div class="slider-label">透明度强度：<span id="alphaStrengthValue" class="slider-value">100%</span></div>
+                        <input type="range" id="alphaStrength" min="1" max="200" value="100" class="slider-input">
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="reset-btn" id="resetParams">重置所有参数</button>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn-generate">生成幻影坦克图片</button>
+                </div>
+                
+                <!-- 状态消息 -->
+                <div id="statusMessage" class="status-message hidden"></div>
+                
+                <!-- 加载提示 -->
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <div>正在生成幻影坦克图片...</div>
+                </div>
+            </div>
+            
+            <!-- 右侧：结果预览和下载 -->
+            <div class="panel">
+                <h2 class="panel-title">结果预览与下载</h2>
+                
+                <div class="result-preview">
+                    <div class="bg-toggle">
+                        <button class="bg-btn active" id="whiteBgBtn">白色背景</button>
+                        <button class="bg-btn" id="blackBgBtn">黑色背景</button>
+                    </div>
+                    
+                    <div class="result-canvas-container bg-white" id="resultContainer">
+                        <canvas id="resultCanvas" class="result-canvas"></canvas>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="downloadBtn" class="btn-download" disabled>下载PNG图片</button>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-title">使用说明：</div>
+                    <div class="info-content">
+                        <strong>参数说明：</strong><br>
+                        1. <strong>表图亮度/里图亮度</strong>：分别调整两张图片的亮度（-100%到+100%）<br>
+                        2. <strong>表图对比度/里图对比度</strong>：分别调整两张图片的对比度<br>
+                        3. <strong>色彩比例</strong>：控制表图和里图在混合时的色彩权重（0%偏向表图，100%偏向里图）<br>
+                        4. <strong>亮度比例</strong>：控制表图和里图在混合时的亮度权重<br>
+                        5. <strong>透明度强度</strong>：控制混合效果的强度，值越大效果越明显<br>
+                        <br>
+                        <strong>提示：</strong>生成的图片是透明的PNG格式，在不同背景色下会显示不同内容
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>幻影坦克图片生成器 v3.0 | 已修复下载功能 | 基于HTML5 Canvas实现</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM元素
+        const image1Input = document.getElementById('image1');
+        const image2Input = document.getElementById('image2');
+        const preview1 = document.getElementById('preview1');
+        const preview2 = document.getElementById('preview2');
+        const placeholder1 = document.getElementById('placeholder1');
+        const placeholder2 = document.getElementById('placeholder2');
+        const uploadArea1 = document.getElementById('uploadArea1');
+        const uploadArea2 = document.getElementById('uploadArea2');
+        const outputSizeSelect = document.getElementById('outputSize');
+        
+        // 高级参数滑块
+        const brightness1Slider = document.getElementById('brightness1');
+        const brightness2Slider = document.getElementById('brightness2');
+        const contrast1Slider = document.getElementById('contrast1');
+        const contrast2Slider = document.getElementById('contrast2');
+        const colorRatioSlider = document.getElementById('colorRatio');
+        const brightnessRatioSlider = document.getElementById('brightnessRatio');
+        const alphaStrengthSlider = document.getElementById('alphaStrength');
+        
+        // 参数值显示
+        const brightness1Value = document.getElementById('brightness1Value');
+        const brightness2Value = document.getElementById('brightness2Value');
+        const contrast1Value = document.getElementById('contrast1Value');
+        const contrast2Value = document.getElementById('contrast2Value');
+        const colorRatioValue = document.getElementById('colorRatioValue');
+        const brightnessRatioValue = document.getElementById('brightnessRatioValue');
+        const alphaStrengthValue = document.getElementById('alphaStrengthValue');
+        
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const whiteBgBtn = document.getElementById('whiteBgBtn');
+        const blackBgBtn = document.getElementById('blackBgBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultCanvas = document.getElementById('resultCanvas');
+        const loading = document.getElementById('loading');
+        const resetParamsBtn = document.getElementById('resetParams');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        // 全局变量
+        let image1 = null;
+        let image2 = null;
+        let ctx = resultCanvas.getContext('2d');
+        let mirageImageData = null;
+        let isImageGenerated = false;
+        
+        // 事件监听器
+        uploadArea1.addEventListener('click', () => image1Input.click());
+        uploadArea2.addEventListener('click', () => image2Input.click());
+        
+        image1Input.addEventListener('change', (e) => handleImageUpload(e, 1));
+        image2Input.addEventListener('change', (e) => handleImageUpload(e, 2));
+        
+        // 更新滑块值显示
+        brightness1Slider.addEventListener('input', () => {
+            brightness1Value.textContent = `${brightness1Slider.value > 0 ? '+' : ''}${brightness1Slider.value}%`;
+        });
+        
+        brightness2Slider.addEventListener('input', () => {
+            brightness2Value.textContent = `${brightness2Slider.value > 0 ? '+' : ''}${brightness2Slider.value}%`;
+        });
+        
+        contrast1Slider.addEventListener('input', () => {
+            contrast1Value.textContent = `${contrast1Slider.value > 0 ? '+' : ''}${contrast1Slider.value}%`;
+        });
+        
+        contrast2Slider.addEventListener('input', () => {
+            contrast2Value.textContent = `${contrast2Slider.value > 0 ? '+' : ''}${contrast2Slider.value}%`;
+        });
+        
+        colorRatioSlider.addEventListener('input', () => {
+            colorRatioValue.textContent = `${colorRatioSlider.value}%`;
+        });
+        
+        brightnessRatioSlider.addEventListener('input', () => {
+            brightnessRatioValue.textContent = `${brightnessRatioSlider.value}%`;
+        });
+        
+        alphaStrengthSlider.addEventListener('input', () => {
+            alphaStrengthValue.textContent = `${alphaStrengthSlider.value}%`;
+        });
+        
+        generateBtn.addEventListener('click', generateMirageTank);
+        downloadBtn.addEventListener('click', downloadImage);
+        whiteBgBtn.addEventListener('click', () => switchBackground('white'));
+        blackBgBtn.addEventListener('click', () => switchBackground('black'));
+        resetParamsBtn.addEventListener('click', resetAllParams);
+        
+        // 拖放上传功能
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea1.addEventListener(eventName, preventDefaults, false);
+            uploadArea2.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea1.addEventListener(eventName, () => uploadArea1.style.borderColor = '#e74c3c', false);
+            uploadArea2.addEventListener(eventName, () => uploadArea2.style.borderColor = '#e74c3c', false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea1.addEventListener(eventName, () => uploadArea1.style.borderColor = '#3498db', false);
+            uploadArea2.addEventListener(eventName, () => uploadArea2.style.borderColor = '#3498db', false);
+        });
+        
+        uploadArea1.addEventListener('drop', (e) => handleDrop(e, 1), false);
+        uploadArea2.addEventListener('drop', (e) => handleDrop(e, 2), false);
+        
+        // 处理图片上传
+        function handleImageUpload(event, imageNumber) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        if (imageNumber === 1) {
+                            image1 = img;
+                            preview1.src = e.target.result;
+                            preview1.classList.remove('hidden');
+                            placeholder1.classList.add('hidden');
+                        } else {
+                            image2 = img;
+                            preview2.src = e.target.result;
+                            preview2.classList.remove('hidden');
+                            placeholder2.classList.add('hidden');
+                        }
+                        
+                        // 如果两张图片都已上传，启用生成按钮
+                        if (image1 && image2) {
+                            generateBtn.disabled = false;
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // 处理拖放上传
+        function handleDrop(e, imageNumber) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            
+            if (file && file.type.startsWith('image/')) {
+                if (imageNumber === 1) {
+                    image1Input.files = dt.files;
+                    handleImageUpload({target: {files: dt.files}}, 1);
+                } else {
+                    image2Input.files = dt.files;
+                    handleImageUpload({target: {files: dt.files}}, 2);
+                }
+            }
+        }
+        
+        // 切换背景颜色
+        function switchBackground(color) {
+            if (color === 'white') {
+                resultContainer.className = 'result-canvas-container bg-white';
+                whiteBgBtn.classList.add('active');
+                blackBgBtn.classList.remove('active');
+            } else {
+                resultContainer.className = 'result-canvas-container bg-black';
+                whiteBgBtn.classList.remove('active');
+                blackBgBtn.classList.add('active');
+            }
+        }
+        
+        // 重置所有参数
+        function resetAllParams() {
+            brightness1Slider.value = 0;
+            brightness2Slider.value = 0;
+            contrast1Slider.value = 0;
+            contrast2Slider.value = 0;
+            colorRatioSlider.value = 50;
+            brightnessRatioSlider.value = 50;
+            alphaStrengthSlider.value = 100;
+            
+            brightness1Value.textContent = '0%';
+            brightness2Value.textContent = '0%';
+            contrast1Value.textContent = '0%';
+            contrast2Value.textContent = '0%';
+            colorRatioValue.textContent = '50%';
+            brightnessRatioValue.textContent = '50%';
+            alphaStrengthValue.textContent = '100%';
+            
+            // 重新生成图片
+            if (image1 && image2) {
+                generateMirageTank();
+            }
+        }
+        
+        // 显示状态消息
+        function showStatusMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message';
+            
+            if (type === 'success') {
+                statusMessage.classList.add('status-success');
+            } else if (type === 'error') {
+                statusMessage.classList.add('status-error');
+            } else if (type === 'info') {
+                statusMessage.classList.add('status-info');
+            }
+            
+            statusMessage.classList.remove('hidden');
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // 应用亮度和对比度调整
+        function applyBrightnessContrast(imageData, brightness, contrast) {
+            const data = imageData.data;
+            const brightnessFactor = brightness / 100;
+            const contrastFactor = (contrast + 100) / 100;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                // 应用对比度
+                data[i] = (data[i] - 128) * contrastFactor + 128;
+                data[i + 1] = (data[i + 1] - 128) * contrastFactor + 128;
+                data[i + 2] = (data[i + 2] - 128) * contrastFactor + 128;
+                
+                // 应用亮度
+                data[i] = Math.max(0, Math.min(255, data[i] + brightnessFactor * 255));
+                data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + brightnessFactor * 255));
+                data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + brightnessFactor * 255));
+            }
+            
+            return imageData;
+        }
+        
+        // 生成幻影坦克图片
+        function generateMirageTank() {
+            if (!image1 || !image2) {
+                showStatusMessage('请先上传两张图片！', 'error');
+                return;
+            }
+            
+            loading.classList.remove('hidden');
+            downloadBtn.disabled = true;
+            isImageGenerated = false;
+            
+            // 使用setTimeout确保UI更新
+            setTimeout(() => {
+                try {
+                    // 获取输出尺寸
+                    const outputSize = outputSizeSelect.value;
+                    let width, height;
+                    
+                    if (outputSize === 'original') {
+                        // 使用最大图片尺寸
+                        width = Math.max(image1.width, image2.width);
+                        height = Math.max(image1.height, image2.height);
+                    } else if (outputSize === '512') {
+                        width = 512;
+                        height = 512;
+                    } else if (outputSize === '1024') {
+                        width = 1024;
+                        height = 1024;
+                    } else if (outputSize === '800x600') {
+                        width = 800;
+                        height = 600;
+                    } else if (outputSize === '1200x900') {
+                        width = 1200;
+                        height = 900;
+                    } else {
+                        width = 800;
+                        height = 600;
+                    }
+                    
+                    // 设置Canvas尺寸
+                    resultCanvas.width = width;
+                    resultCanvas.height = height;
+                    
+                    // 获取参数值
+                    const brightness1 = parseInt(brightness1Slider.value) / 100;
+                    const brightness2 = parseInt(brightness2Slider.value) / 100;
+                    const contrast1 = parseInt(contrast1Slider.value);
+                    const contrast2 = parseInt(contrast2Slider.value);
+                    const colorRatio = parseInt(colorRatioSlider.value) / 100; // 0-1
+                    const brightnessRatio = parseInt(brightnessRatioSlider.value) / 100; // 0-1
+                    const alphaStrength = parseInt(alphaStrengthSlider.value) / 100;
+                    
+                    // 创建临时Canvas处理图片
+                    const tempCanvas1 = document.createElement('canvas');
+                    const tempCtx1 = tempCanvas1.getContext('2d');
+                    tempCanvas1.width = width;
+                    tempCanvas1.height = height;
+                    
+                    const tempCanvas2 = document.createElement('canvas');
+                    const tempCtx2 = tempCanvas2.getContext('2d');
+                    tempCanvas2.width = width;
+                    tempCanvas2.height = height;
+                    
+                    // 绘制图片到临时Canvas
+                    tempCtx1.drawImage(image1, 0, 0, width, height);
+                    tempCtx2.drawImage(image2, 0, 0, width, height);
+                    
+                    // 获取图片数据
+                    let imageData1 = tempCtx1.getImageData(0, 0, width, height);
+                    let imageData2 = tempCtx2.getImageData(0, 0, width, height);
+                    
+                    // 应用亮度和对比度调整
+                    imageData1 = applyBrightnessContrast(imageData1, brightness1, contrast1);
+                    imageData2 = applyBrightnessContrast(imageData2, brightness2, contrast2);
+                    
+                    // 创建结果图片数据
+                    mirageImageData = ctx.createImageData(width, height);
+                    
+                    // 幻影坦克算法（增强版）
+                    for (let i = 0; i < imageData1.data.length; i += 4) {
+                        // 获取表图像素
+                        const r1 = imageData1.data[i];
+                        const g1 = imageData1.data[i + 1];
+                        const b1 = imageData1.data[i + 2];
+                        
+                        // 获取里图像素
+                        const r2 = imageData2.data[i];
+                        const g2 = imageData2.data[i + 1];
+                        const b2 = imageData2.data[i + 2];
+                        
+                        // 计算亮度（考虑亮度比例）
+                        const luminance1 = (0.299 * r1 + 0.587 * g1 + 0.114 * b1) * brightnessRatio;
+                        const luminance2 = (0.299 * r2 + 0.587 * g2 + 0.114 * b2) * (1 - brightnessRatio);
+                        
+                        // 计算alpha值（透明度），考虑透明度强度
+                        let alpha = 255 - (luminance1 - luminance2) * alphaStrength;
+                        alpha = Math.max(0, Math.min(255, alpha));
+                        
+                        // 计算颜色值（考虑色彩比例）
+                        let r, g, b;
+                        
+                        if (alpha === 0) {
+                            r = g = b = 0;
+                        } else {
+                            // 混合表图和里图的颜色
+                            const mixedR = r1 * (1 - colorRatio) + r2 * colorRatio;
+                            const mixedG = g1 * (1 - colorRatio) + g2 * colorRatio;
+                            const mixedB = b1 * (1 - colorRatio) + b2 * colorRatio;
+                            
+                            r = Math.min(255, Math.max(0, (mixedR * 255) / alpha));
+                            g = Math.min(255, Math.max(0, (mixedG * 255) / alpha));
+                            b = Math.min(255, Math.max(0, (mixedB * 255) / alpha));
+                        }
+                        
+                        // 设置结果像素
+                        mirageImageData.data[i] = Math.round(r);
+                        mirageImageData.data[i + 1] = Math.round(g);
+                        mirageImageData.data[i + 2] = Math.round(b);
+                        mirageImageData.data[i + 3] = Math.round(alpha);
+                    }
+                    
+                    // 将结果绘制到Canvas
+                    ctx.putImageData(mirageImageData, 0, 0);
+                    
+                    // 启用下载按钮
+                    downloadBtn.disabled = false;
+                    isImageGenerated = true;
+                    
+                    loading.classList.add('hidden');
+                    showStatusMessage('幻影坦克图片生成成功！', 'success');
+                    
+                } catch (error) {
+                    console.error('生成幻影坦克图片时出错:', error);
+                    showStatusMessage('生成图片时出错，请重试！', 'error');
+                    loading.classList.add('hidden');
+                }
+            }, 100);
+        }
+        
+        // 下载图片
+        function downloadImage() {
+            if (!isImageGenerated) {
+                showStatusMessage('请先生成幻影坦克图片！', 'error');
+                return;
+            }
+            
+            try {
+                // 检查Canvas是否有内容
+                if (resultCanvas.width === 0 || resultCanvas.height === 0) {
+                    showStatusMessage('Canvas为空，请先生成图片！', 'error');
+                    return;
+                }
+                
+                // 创建一个临时链接
+                const link = document.createElement('a');
+                
+                // 设置下载的文件名
+                const timestamp = new Date().getTime();
+                link.download = `幻影坦克图片_${timestamp}.png`;
+                
+                // 将Canvas转换为DataURL
+                const dataURL = resultCanvas.toDataURL('image/png');
+                
+                // 设置链接的href为DataURL
+                link.href = dataURL;
+                
+                // 将链接添加到文档中（某些浏览器需要）
+                document.body.appendChild(link);
+                
+                // 模拟点击链接
+                link.click();
+                
+                // 从文档中移除链接
+                document.body.removeChild(link);
+                
+                showStatusMessage('图片下载成功！', 'success');
+            } catch (error) {
+                console.error('下载图片时出错:', error);
+                showStatusMessage('下载图片时出错，请重试！', 'error');
+            }
+        }
+        
+        // 初始化Canvas尺寸
+        resultCanvas.width = 300;
+        resultCanvas.height = 300;
+        
+        // 绘制初始提示
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, 0, 300, 300);
+        ctx.fillStyle = '#999';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('生成后预览将显示在这里', 150, 150);
+        
+        // 初始状态
+        generateBtn.disabled = true;
+        downloadBtn.disabled = true;
+    </script>
+</body>
+</html>
